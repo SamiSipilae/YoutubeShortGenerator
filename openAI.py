@@ -3,9 +3,10 @@ import urllib.request
 import settings
 
 openai.api_key = settings.OpenAiAPIKey
+output = settings.outputPath
 
 def getStory(genre, topic):
-    prompt = f"Write a 2 sentence {genre} story about {topic}"
+    prompt = f"Write a 2 sentence {genre} story about {topic}\n"
     print(f"Fetching story with prompt: {prompt}")
     story = openai.Completion.create(
     model="text-davinci-003",
@@ -20,7 +21,7 @@ def getStory(genre, topic):
 
 
 def getArt(subject):
-    fileName = f"{subject}.png"
+    fileName = "".join([c for c in f"{subject}" if c.isalpha() or c.isdigit() or c==' ']).rstrip()  + ".png"
     print(f"Fetcing image {fileName}")
     response = openai.Image.create(
     prompt= subject,
@@ -28,4 +29,7 @@ def getArt(subject):
     size="512x512"
     )
     imageUrl = response['data'][0]['url']
-    urllib.request.urlretrieve(imageUrl, fileName)
+    urllib.request.urlretrieve(imageUrl, output+fileName)
+
+
+    return output+fileName
