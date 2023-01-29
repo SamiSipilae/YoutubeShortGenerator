@@ -1,27 +1,59 @@
-from youtube_upload.client import YoutubeUploader
-import settings
-import shutil
+import json
+from pathlib import Path
+from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import TimeoutException
+import os
+import time
 
-# due to apparent bug in youtube_upload the oauth file is always deleted, so we keep a copy
-shutil.copyfile('_oauth.json', 'oauth.json')
+
+def upload(file, description, tags, title):
+
+    browser = webdriver.Firefox()
+    browser.get("https://www.youtube.com/")
+    # retrieve cookies from a json file
+    for cookie in json.loads(Path('cookies.json').read_text()):
+        browser.add_cookie(cookie)
+
+    browser.get("https://www.youtube.com/upload")
+
+    try:
+        WebDriverWait(browser, 5).until(EC.presence_of_element_located((By.XPATH, '//div[.="Continue"]'))).click()
+    except:
+        pass
+
+    WebDriverWait(browser, 5).until(EC.presence_of_element_located((By.XPATH, '//input[@name="Filedata"]'))).send_keys(os.path.abspath(file))
+    WebDriverWait(browser, 5).until(EC.presence_of_element_located((By.XPATH, '//div[.="Next"]')))
+    titleField = WebDriverWait(browser, 15).until(EC.presence_of_element_located((By.XPATH, '//div[@aria-label="Add a title that describes your video"]')))
+    titleField.send_keys(Keys.CONTROL, 'a')
+    titleField.send_keys(title)
+    WebDriverWait(browser, 5).until(EC.presence_of_element_located((By.XPATH, '//div[@aria-label="Tell viewers about your video"]'))).send_keys(description)
+    WebDriverWait(browser, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@name="VIDEO_MADE_FOR_KIDS_NOT_MFK"]'))).click()
+    WebDriverWait(browser, 5).until(EC.presence_of_element_located((By.XPATH, '//div[.="Show more"]'))).click()
+    WebDriverWait(browser, 5).until(EC.presence_of_element_located((By.XPATH, '//input[@placeholder="Add tag"]'))).click()
+    tagField = WebDriverWait(browser, 5).until(EC.presence_of_element_located((By.XPATH, '//input[@placeholder="Add tag"]')))
+    for tag in tags:
+        tagField.send_keys(tag+',')
+        time.sleep(0.1)
+    WebDriverWait(browser, 5).until(EC.presence_of_element_located((By.XPATH, '//div[.="Video language"]'))).click()
+    WebDriverWait(browser, 5).until(EC.presence_of_element_located((By.XPATH, '//yt-formatted-string[.="English"]'))).click()
+    WebDriverWait(browser, 5).until(EC.presence_of_element_located((By.XPATH, '//div[.="Next"]'))).click()
+    WebDriverWait(browser, 5).until(EC.presence_of_element_located((By.XPATH, '//h3[.="Add subtitles"]')))
+    WebDriverWait(browser, 5).until(EC.presence_of_element_located((By.XPATH, '//div[.="Next"]'))).click()
+    WebDriverWait(browser, 5).until(EC.presence_of_element_located((By.XPATH, '//div[.="Copyright"]')))
+    WebDriverWait(browser, 5).until(EC.presence_of_element_located((By.XPATH, '//div[.="Next"]'))).click()
+    WebDriverWait(browser, 5).until(EC.presence_of_element_located((By.XPATH, '//div[.="Public"]'))).click()
+    WebDriverWait(browser, 5).until(EC.presence_of_element_located((By.XPATH, '//div[.="Publish"]'))).click()
 
 
-uploader = YoutubeUploader(settings.youtubeClientID ,settings.youtubeClientSecret)
-uploader.authenticate()
 
 
 
-def upload(file, description):
-    # Video options
-    options = {
-        "title" : "2 sentence horror", # The video title
-        "description" : description, # The video description
-        "tags" : ["AI", "story", "horror", 'short', '#aigenerated','chatgpt', 'openai', 'artificalintelligence',],
-        "categoryId" : settings.youtubeCategory,
-        "privacyStatus" : "public", # Video privacy. Can either be "public", "private", or "unlisted"
-        "kids" : False, # Specifies if the Video if for kids or not. Defaults to False.
-        #"thumbnailLink" : "https://cdn.havecamerawilltravel.com/photographer/files/2020/01/youtube-logo-new-1068x510.jpg" # Optional. Specifies video thumbnail.
-    }
 
-    # upload video
-    uploader.upload(file, options) 
+
+
+
+

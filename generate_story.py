@@ -3,9 +3,9 @@ import settings
 import googleTTS
 import create_video
 import image
-import youtube
+import json
 import os
-
+import youtube
 
 
 def cleanUp():
@@ -47,7 +47,8 @@ for sentence in sentences:
 
 video = create_video.generateVideo(story)
 
-# description = storyText + "\n\n a 2 sentence {genre} story about: {topic}\n This story is automatically AI generated using openAI and other similar tools."
+title= f"Ai generated 2 story horror: {topic}",
+description=  storyText + f"\n\n a 2 sentence {genre} story about: {topic}\n This story is automatically AI generated using openAI and other similar tools.",
+tags=["AI", "artificialintelligence", "horror", "short", "2sentencehorror","openai", "aigenerated","story"]
 
-# youtube.upload(video, description )
-
+youtube.upload(video, description,tags,title)
