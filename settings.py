@@ -2,6 +2,8 @@ import keyring
 import random
 import os
 
+cleanUp = True
+
 OpenAiAPIKey = keyring.get_password("openai", "apikey")
 
 

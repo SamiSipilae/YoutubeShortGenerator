@@ -20,8 +20,24 @@ def getStory(genre, topic):
     return storyText
 
 
+def getJoke(topic):
+    prompt = f"Write a funny joke about {topic}\n"
+    print(f"Fetching joke with prompt: {prompt}")
+    joke = openai.Completion.create(
+    model="text-davinci-003",
+    prompt=prompt,
+    max_tokens=250,
+    temperature=0.9
+    )
+
+    jokeText = joke['choices'][0]['text'].replace('\n','')
+    print(f"Joke generated: {jokeText}")
+    return jokeText
+
+
 def getArt(subject):
-    fileName = "".join([c for c in f"{subject}" if c.isalpha() or c.isdigit() or c==' ']).rstrip()  + ".png"
+    fileNameLong = "".join([c for c in f"{subject}" if c.isalpha() or c.isdigit() or c==' ']).rstrip()  
+    fileName = fileNameLong[:32]+ ".png" #cap filename length
     print(f"Fetcing image {fileName}")
     response = openai.Image.create(
     prompt= subject,

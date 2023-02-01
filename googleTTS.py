@@ -26,9 +26,10 @@ voiceList = buildVoiceList()
 
 
 def TTS(sentence, voice):
-    fileName =  "".join([c for c in f"{sentence}" if c.isalpha() or c.isdigit() or c==' ']).rstrip()  + ".mp3"
+    fileNameLong =  "".join([c for c in f"{sentence}" if c.isalpha() or c.isdigit() or c==' ']).rstrip()  
+    fileName = fileNameLong[:32]+ ".mp3" #cap filename length
     # Instantiates a client
-    print(f"Fetching voice: {fileName}")
+    print(f"Fetching voice: {fileNameLong}")
     synthesis_input = texttospeech.SynthesisInput(text=sentence)
     # Build the voice request, select the language code ("en-US") and the ssml
     # voice gender ("neutral")
