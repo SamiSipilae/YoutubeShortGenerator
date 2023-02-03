@@ -11,11 +11,12 @@ import time
 
 from selenium.webdriver.firefox.options import Options
 import logging
-
+import datetime
 
 
 
 def upload(file, description, tags, title):
+    print("Uploading to youtube...")
     options = Options()
     options.headless = True
 
@@ -62,9 +63,11 @@ def upload(file, description, tags, title):
         Path('cookies.json').write_text(
         json.dumps(browser.get_cookies(), indent=2))
         browser.close()
-    except:
+        print("Uploading finished.")
+    except Exception:
+        browser.save_screenshot("youtube error " +datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + ".png")
         logging.exception("Exception while uploading file:")
-        breakpoint()
+        #breakpoint()
 
 
 

@@ -4,6 +4,8 @@ import glob
 import a2_sentence_story
 import random
 import settings
+import time
+import logging
 
 def cleanUp():
     fileTypes = ['*.mp4','*.png', '*.mp3']
@@ -19,12 +21,18 @@ def cleanUp():
 
 
 
+while True:
 
-type = random.choice(['joke', '2sentenceStory'])
+    try:
+        type = random.choice(['joke', '2sentenceStory'])
 
-if type == 'joke':
-    joke.generate()
-elif type == '2sentenceStory':
-    a2_sentence_story.generate()
+        if type == 'joke':
+            joke.generate()
+        elif type == '2sentenceStory':
+            a2_sentence_story.generate()
 
-cleanUp()
+        cleanUp()
+        
+    except Exception:
+        logging.exception("Error:")
+    time.sleep(60*30)
